@@ -1,0 +1,270 @@
+*{
+   padding: 0;
+   margin: 0;
+   box-sizing: border-box;
+}
+
+body{
+   width: 100vw;
+   height: 100vh;
+}
+
+.game_container{
+   position: relative;
+   display: grid;
+   grid-template-rows: repeat(24, 1fr);
+   grid-template-columns: repeat(48, 1fr);
+   width: 100%;
+   height:100%;
+}
+
+/* start button container */
+.menu_container{
+   grid-row: 2 / 6;
+   grid-column: 2 / 8;
+   display: flex;
+   left: 5px;
+   top: 20px;
+   width: 80px;
+   flex-direction: column;
+}
+
+.btn{
+   margin-bottom: 8px;
+   padding: 3px;
+}
+
+.new_game_btn{
+   display: none;
+}
+
+/* start table container */
+.table_container{
+   display: grid;
+   grid-row: 7 / 21;
+   grid-column: 5 / 45;
+   border: 2px solid black;
+   background-color: green;
+   border-radius: 30%;
+}
+
+/* start player name */
+.name{
+   position: absolute;
+   width: 100%;
+   text-align: center;
+   font-size: 14px;
+   font-weight: bold;
+   color: blue;
+}
+
+.chair_0 .name, 
+.chair_1 .name, 
+.chair_2 .name, 
+.chair_8 .name, 
+.chair_9 .name{
+   bottom: 0;
+}
+
+.chair_3 .name, 
+.chair_4 .name, 
+.chair_5 .name, 
+.chair_6 .name, 
+.chair_7 .name{
+   top: 0px;
+}
+
+/* start player wallet */
+.wallet{
+   position: absolute;
+}
+
+.chair_0 .wallet, 
+.chair_1 .wallet, 
+.chair_9 .wallet{
+   top: -20%;
+   left: 0px;
+}
+
+.chair_4 .wallet, 
+.chair_5 .wallet, 
+.chair_6 .wallet{
+   bottom: -20%;
+   left: 0px;
+}
+
+.chair_2 .wallet{
+   top: -20%;
+   right: 20%;
+}
+
+.chair_3 .wallet{
+   bottom: -20%;
+   right: 20%;
+}
+
+.chair_7 .wallet{
+   bottom: -20%;
+   left: 20%;
+}
+
+.chair_8 .wallet{
+   top: -20%;
+   left: 20%;
+}
+
+/* start player bets */
+.bet{
+   /* display: none; */
+   position: absolute;
+   font-size: 14px;
+}
+
+.chair_0 .bet, 
+.chair_1 .bet, 
+.chair_9 .bet{
+   top: -40%;
+   right: 10%;
+}
+
+.chair_4 .bet, 
+.chair_5 .bet, 
+.chair_6 .bet{
+   bottom: -40%;
+   right: 10%;
+}
+
+.chair_2 .bet{
+   top: -40%;
+   right: -20%;
+}
+
+.chair_3 .bet{
+   bottom: -40%;
+   right: -20%;
+}
+
+.chair_7 .bet{
+   bottom: -40%;
+   left: -40%
+}
+
+.chair_8 .bet{
+   top: -40%;
+   left: -40%;
+}
+
+/* start blinds */
+.blind{
+   position: absolute;
+   /* display: none; */
+}
+
+.chair_0 .blind, 
+.chair_1 .blind, 
+.chair_2 .blind, 
+.chair_9 .blind{
+   top: -20%;
+   right: 0;
+}
+
+.chair_3 .blind, 
+.chair_4 .blind, 
+.chair_5 .blind, 
+.chair_6 .blind{
+   bottom: -20%;
+   right: 0;
+}
+
+.chair_7 .blind{
+   bottom: -20%;
+}
+
+.chair_8 .blind{
+   top: -20%;
+}
+
+/* start player cards */
+.player_cards{
+   position: absolute;
+   display: flex;
+   justify-content: space-evenly;
+   height: 50%;
+   width: 100%;
+}
+
+.card{
+   font-size: 10px;
+   height: 100%;
+   background-color: gray;
+   margin: 2px;
+}
+
+.chair_0 .player_cards, 
+.chair_1 .player_cards, 
+.chair_2 .player_cards, 
+.chair_8 .player_cards, 
+.chair_9 .player_cards{
+   top: 0;
+}
+
+.chair_3 .player_cards, 
+.chair_4 .player_cards, 
+.chair_5 .player_cards, 
+.chair_6 .player_cards, 
+.chair_7 .player_cards{
+   bottom: 0;
+}
+
+/* start of players containers */
+.players_container{
+   display: grid ;
+}
+
+.chair{
+   position: relative;
+   height: 100%;
+   width: 100%;
+   /* border: 2px solid black; */
+}
+
+.chair_0{      grid-row: 18 / 22; grid-column: 22 / 27;}
+.chair_1{      grid-row: 18 / 22; grid-column: 13 / 18;}
+.chair_2{      grid-row: 16 / 20; grid-column: 4 / 9;}
+.chair_3{      grid-row: 8 / 12;  grid-column: 4 / 9;}
+.chair_4{      grid-row: 4 / 8;   grid-column: 13 / 18;}
+.chair_5{      grid-row: 4 / 8;   grid-column: 22 / 27;}
+.chair_6{      grid-row: 4 / 8;   grid-column: 32 / 37;}
+.chair_7{      grid-row: 8 / 12;  grid-column: 41 / 46;}
+.chair_8{      grid-row: 16 / 20; grid-column: 41 / 46;}
+.chair_9{      grid-row: 18 / 22; grid-column: 32 / 37;}
+
+/* start table pot */
+.table_pot{
+   grid-row: 10 / 11;
+   grid-column: 20 / 29;
+   border: 2px solid black;
+}
+
+/* start table card container */
+.card_container{
+   display: flex;
+   grid-row: 12 / 14;
+   grid-column: 18 / 31;
+}
+
+.flop_container{
+   display: flex;
+}
+
+/* start playerOption container */
+.option_container{
+   display: flex;
+   grid-row: 22 / 24;
+   grid-column: 26 /47;
+}
+
+.opt{
+   margin: 5px;
+   padding: 20px;
+}
