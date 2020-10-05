@@ -1,0 +1,22 @@
+{
+  "name": "myfirstpokergame_test",
+  "version": "1.0.0",
+  "description": "## terminology and abbreviations 1. NOP = Number Of Player (ex client)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastiaanvanvalen/myFirstPokerGame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebastiaanvanvalen/myFirstPokerGame/issues"
+  },
+  "homepage": "https://github.com/sebastiaanvanvalen/myFirstPokerGame#readme",
+  "dependencies": {
+    "websocket": "^1.0.32"
+  }
+}
