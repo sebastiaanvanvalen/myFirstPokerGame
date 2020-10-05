@@ -1,0 +1,30 @@
+{
+	"environment" : {
+		"name"			: "RapportenApp_2020",
+		"code"			: "ARapportenApp_2020MGS",
+		"path"			: "/Users/baxxie/Sites/education_2020",
+		"autoloader"	: "/Users/baxxie/Sites/education_2020/vendor/autoload.php"
+	},
+	
+	"namespaces" : [
+		{
+			"name"	: "application",
+			"path"	: "/Users/baxxie/Sites/myFirstPokerGame/application"
+		},
+		{
+			"name"	: "vendor",
+			"path"   : "/Users/baxxie/Sites/education/construction/vendor"
+		}
+	],
+
+	"databases" : {
+		"baxxie" : {
+			"charset"	: "utf8",
+         "database"  : "myFirstPokerGame",
+            "admin"	: {
+               "user" : "baxxie",
+               "pass" : "This=MySQL4-M3"
+			}
+		}	
+	}
+}
