@@ -1,0 +1,238 @@
+To begin with:
+* One table for a fixed number of 3 players. No comp-players
+* Players enter their name/age
+* Security from the moment they submit name/age form
+* Players don’t have an account. They log in to play only ONE game. (For now)
+
+DB:
+Tables
+*     All tables that existed with player_id's
+
+Players
+*     All players that existed with table_id's
+
+Rounds
+*     Outcome of every round on a table
+    * Who won / who left the table / 
+
+Active_table
+*     Status of the table that is currently used
+
+Player_actions
+*     All characteristics of the player at the moment he makes a choice
+    * cards
+    * Blindposition / height
+    * Choice of bet/fold/timeout/raise
+    * Amount of money involved in this choice. 
+
+-------------------------------
+
+The game and all the moves are generated from the server. 
+
+We start with a modal window where the client needs to:
+*     Select NOP
+* Enter a user name
+* Push “new Game"
+
+1. New Game->
+    *     The modal Window disappears
+        * Fading WHILE game is set up.
+    * Setup Table
+        * Server creates NOP and gives HTML back to JavaScript. 
+            * NOP = certain NP’s on certain chairs.
+            * Every player is a HTML-set with a ID and specific name.
+        * JavaScript creates blinds
+        * 
+// JS get a html Template it uses foreach NOP
+// the NOP determines how the table is set nice and evenly…
+*     So 2 players on opposite sides and 8 players evenly distributed
+* OR! Do we make an HTML template in the app.php in which 
+
+
+NOP
+There are 10 chairs on the table.
+When JSON is returned as part of the table setup, certain chairs have to be selected for an e
+
+FLOW:
+After all players are seated and all the cards are on the table, it is time to choose…
+*     Check, bet, fold or raise… 
+* What are official rules for betting...
+
+NEW ROUTE:
+Make a game for multiple players who play at the same table. Having extra “computer players” 
+For this game I will make 3 tables.
+Table 1: the first player can select the number of chairs. Once filled the game starts.
+Table 2: this table will start the moment 2 players took a seat
+Table 3: this table starts when one player takes sits down and can play against a selected number of bots.
+
+So: when entering the website you see three tables and their status:
+e.g. table 1: 2 players waiting, 3 chairs empty. Table 2: empty. Table 3: FULL!.
+
+The user can select table 1 or two. After selecting a table, the user can enter a name (or in case of the first user of table 1 and 3, the number of chairs). The other players on the table get the message a new player is logging in.
+
+Table structure
+-- deleted -- : see DB
+
+* 
+I've created a structure where three players can enter the table. A player record is made with an ID. This ID is then retrieved and used as playerId at te table.
+    - this needs more attention. A minimal effert went to make sure 4 players can't enter at te same time. But I don't believe this is failproof at this time!
+
+*
+Now I need to think about what to do when the table is filled.
+I think I should make a copy to table_records. Afterwards we can use the tableId's and playerId's and the saved players_actions to recreate a game.
+So, after the table is filled with three players a copy is made. This is the point the table gets the autoincremented ID in in the table_records table. 
+table_records has recno's do we need a recno of every player... Because getting the latest ID and add it to act_table is tricky. In the future more tables may play at the same time.
+But for now: only 1 table can exist at the time. So I just get the previous ID from table_records and increment. For now we do this just after the third player entered the table.
+
+At the same time. What to do with all client that want to log in. Just a FULL message? Or do we let them see the game progression.
+
+The moment the table is full the game needs to start. But in all browsers the user sits at the chair in the middle and in the front... I think this should be done in JS. The chairs are only numbered as means to count. They are no entities.
+
+*
+The basic DB structure work good enough for this first version. It is time to think about how to inform the players that the game is going to start. There are plenty of frameworks in Node.js to push this message to the client. But, since I work with php I'm going for the much less elegant solution to have the players JS check for a full table every few seconds.
+First the index.php gets a message the table is not full. From there the client needs to get seated at the table. In this case by redirect to table.php
+From here JS checks for the status of the table.
+
+-----------
+
+first node feature:
+- chatwindow in bottom left corner shows "user, (age) joined the table", at the moment of logging in.
+
+Node.js is installed. A basic server is set up. An http connection is created from Apache to node.js.
+
+to do:
+1 the index.php page shows an loginform. name and age.
+- on submit request to apache to check playercount. 
+- pc = 3 = table preview... 
+- pc<3 = player is added to table and DB.
+- pc<3 = name and age are sent from apache to node.js using cURL 
+- node.js needs to send a message to the act_table_1.js of all clients.
+- act_table_1.js displays "user, (age) joined the table" in chat window
+
+done
+
+-------------
+
+next step...
+just made a first working setup for the chatapp. User "joined the table" message apears in the chat window.
+so now...
+make a full functioning chat module. I guess.
+1. there needs to be a form at the bottom of the chat window.
+2. form through ajax to apache offcourse checking on every corner on the way.
+3. apache sends message to DB and to node.js server.
+4. create simple layout for messages.
+    - more space for larger chat window -> change most grid-rows
+    - An Id needs to be given with Ajax and back with socket. 
+    - Using this ID create css for user and all other players.
+        x CSS needs to know it handles data from the user of the other clients
+
+------
+
+apperently I need to overthink some stuff.
+First!
+    - I need to think about a smart way to start testing. 
+    - DB needs to be deconnected. So the table doesnt have to be emptied.
+    - Refreshing the page doesn't always has the desired effect.
+
+Second:
+    - there needs to be a better plan for the data that is exchanged through the chat module.
+    - The main.php (apache) is used as an entry point Is all chat-data also going to be send to main.php? This makes sense. Data needs to be send to the DB and having all checking and safety features at one place makes sense too.
+
+    Planning for today:
+        - make main.php ready for POST & GET requests.
+        - make a form in the chatmodule for sending messages to main.php
+        - make a data-structure for every POST / GET request so main.php can handle every incomming data the same way.
+
+BUT FIRST: the ID of the user needs to be part of the client. So this ID is part of the data which is send to main.php
+    - the user gets an auto-incremented ID from the DB. This ID needs to be send back to the client...
+
+    DONE!
+
+---------------
+
+what next... I think I want some kind of playercount for this table and a message like "one more player and the game starts"
+the chatwindow is probably the best place for this.
+
+Or I can work on the adding of players to the tables... All clients need to see their chair in the bottom center of the screen...
+
+the thing is: how do I start the game after the last player joined the table.
+Running the php script which gets the last player seated can be directly followed by a new script for dealing the cards and initiating the game.
+or
+Does the table JS contains some kind of listener which will set off a new request to set the table. Now we know for sure all players are truely seated before the game starts and the cards are dealt. 
+
+For now the second choice seems the most logical. Everybody is truely seated before the request for starting the game is send...
+So after adding the player to the DB and table we send an extra que to the clients JS. JS waits for 3 seconds (msg to all clients) before invoking the server to start the game.
+
+Now we give all players a extra property through the URL when joining the table. "startGame = false" But the last entering player gets a "true"
+When this happens, this clients JS needs to wait for a three seconds and que the server the game can start.
+
+Maybe first we need to send all clients a message in the chat "table is now full, preparing the game"
+
+But the last player needs to actually sit down. So in the proces of going from index.php to act_table_1.php the clienst JS listens for the que in the URL. When the que "true" is received the lastjoining players JS fires a request to the server to start the game.
+
+I dont remember how object actually last. Do I create an object and will it be accessable until the end of the game. Or do I have to create an Object and "cary" it through the game and instantiate a new class every time I run a script?
+For example:
+When an object is created for player A. This player happens to lose money every round. So every time a round is closed, a script runs to deal with that.
+My question: can an object of Player A exist for the entire game? An object we only have to call and run the method for keeping its wallet up-to-date?
+
+Now I'm back at setup.php
+The players seated at the active table are retreived. 
+For every player an player object needs to be created. 
+In the object we need the actual player ID, Name and Age, a wallet, two cards and chair number
+When an object is created for each player... client JS needs to get an message
+
+I think I need to do this in sessionStorage... We can save them after creating.
+
+let's think this over again. When do we actualy create the player object?
+idea:
+
+when startQue is given, the request should be that all client JS get a signal to go through the setup.php
+every player gets an session_id with an player- / wallet-object.
+Also an Deck object remains on the server to continue drawing cards.
+
+planning:
+
+gameQue = true:
+js of this player signals the server he sat down with an ajaxrequest
+the server instructs the nodeServer to send a messsage to all player the game is about to start. All playerJS can now go through setup.php and create their own player-/walletObjects
+
+DONE!
+
+-----------
+
+time to think about the next step. All players get their cards at the same time.
+I think I should try to fix the detail of the blinds. 
+Best way to do this? 
+
+The server needs to know the NOP. Or maybe the NOP in combination with the playerIds. When the blinds are randomly assigned this will happen based on the ids in stead of the chair number.
+
+So in startGame.php we add an "getActivePlayers.sgl". Lets try this.
+aaaaaaaaaaaand it works
+
+at this point:
+Everybody gets their cards, blinds are assigned in a propper way. For now I want to display all available players on the table. Eventualy I need to find soms picture for the "player" sitting at the table.
+and now we can also see everybody sitten at the table with the name...
+
+But we do not see the blinds. This makes me think about which data I'm sending back from setup.php
+I have something that works an blinds need to be added. Maybe its better to adjust the datastream
+
+Every player should get: 
+nope - all done!!!
+
+the only thing that remains to reallt start the table the right way:
+    - The blinds need to be set better. It's unclear how high they are and when they are set, the right amount of money needs to be subtracted from the players wallet.
+
+hallo mijn is daphne em ik hpi van sebastiaan hihi hij is lief en sexy even wennen dit bordf toetsen lijken wat verder uit elkaar ik typ soms mis maar misschien is het gewoon wennen en zo moet eraan wennen maar klijnkt wel lekker 
+
+I think the data stream from setup.php needs to be changed. Somewhere the classes. Somewhere the player objects->wallets need to be altered the moment the blinds are set. At this point everybody just gets the blinds and evenrybodies wallet just reflects the pre-set wallet-amout. Not the actual contect of the wallet...
+
+This is the planning for tomorrow! I will make adjustmenst so when the table is set it truly reflects the playerObjects.
+right. so it is "tommorow"... what to do what to do
+
+I thing I should start with thinking about what the blinds should be. An object of just the result of a method in de playerObject
+
+DONE!
+
+------------
+
+happy days. I should really commit some stuff right now
