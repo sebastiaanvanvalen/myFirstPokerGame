@@ -17,7 +17,7 @@ $csrfToken    = $newCsrfToken->create();
 
 $playerId     = $_GET['id'];
 $playerName   = $_GET['name'];
-$playerAge    = $_GET['age'];
+$playerAge    = $_GET['age']; 
 $startGame    = $_GET['startGame'];
 
 // $hash = new Hash;
