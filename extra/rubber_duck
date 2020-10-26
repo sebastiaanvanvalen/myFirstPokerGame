@@ -235,4 +235,297 @@ DONE!
 
 ------------
 
-happy days. I should really commit some stuff right now
+happy days. I should really commit some stuff right now. - done - 
+
+so what now.
+It looks like the setup for the game is ready. Which means:
+    - everybody sits at the table
+    - chat function is working
+    - all players have cards
+    - the blinds are set
+    - the players wallets are up-to-date
+
+Next: the player next to the BB should get the opportunity to make the first move. So when the game is started, this player should get the status to use the buttons.
+I thinks that after starting the game, the server should check for all player-sessions. The player next to the BB should receive a que which sparks the "play"-status
+
+for now I'm going to add an extra piece of info in the dataStream from the moment the game starts. We need to always know who the player left of the BB is. This player gets the "play" que. The others get "wait"
+
+Don-E!
+
+-----------
+
+so now... the incomming data from setup.php contains a "playing" or "waiting" que. So now we need to make a listener...
+The moment node.js receives this que, the player gets 60 seconds to make a choice.
+    - all players see a timer counting down from 60 sec.
+    - the "playing" player's buttons become responsive untill a selection is made.
+    - if a player makes no choice within 60 seconds... fold or check when possible.
+
+----- just added some CSS and an input for raising.
+
+Now I come to the first button "fold"
+I realise that folding means you should not be a part of that round anymore
+So pushing the fold button should send to the server I have participate anymore for now.
+I need a RoundObject... or something
+
+what information do we need:
+    - minimal bettingAmount
+    - how much money is in the pot?
+    - Everybody needs to see the updated walletContents of the other players
+    - server needs to iterate through the players who still get an opportunity to bet.
+
+when a player folds we send:
+    - playerId
+    - the amount of money (or blinds) he leaves on the table
+    - 
+
+OHman... A lot of stuff needs to be done for handling a players choice. 
+Made soms adjustments to the PlayerClass. I think that I should beware of unfounded fear of making things complicated. They are so write the code. This needs to be done right and you'll need the code for it.
+for tomorrow:
+- I need to make a hypothetical round. Blinds are set, the first player folds, the second calls, the third raises, (back to the-) the second goes all-in... See what happens.
+What functions do we need???
+
+for real. just try to lay out this round. every step and function we need to handle everything. from data send to the server and back through sockets to every function we need in the classes on the server
+and now it's tomorrow. Lets start a fresh game in mind. What do we need to make a (efficient) decision. 
+
+at starting point:
+    - only the player left of the BB gets a "playing" status from the server.
+    - All players see the blinds added in the tablePot and substracted from the players wallets.
+    - all players see a timer. This timer doent have to be exactly synced. People will understand the few frames it takes to pass the turn to the next player.
+    - All players see a message (just above the chat window?) in which the "playing" players name and timer is shown
+    - When the "Playing" player makes a choice, the and times refreshes
+    - When the "Playing" player makes a choice, his wallet and tablePot are updated
+
+so before the player makes a choice JS needs to know the "bet" value (moneyAmount needed to match the highest bet on the table.)
+- Also it needs to know the maximal amount of raise it can produce.
+
+before a choice can be made, the incomming data needs to contain:
+    - hight of all the blinds
+    - the playingStatus and status of all the players
+    - the height of the highest bet on the table for the "bet" value
+    - the current wallet status and with that the maximal amount which the player can raise.
+
+-----
+
+
+It seems that I need another SESSION that keeps track of the choices all players made.
+First! ALL players MUST make a choice. After this a check needs to be made.
+What is the inventory of the choices the players made. 
+
+NOP x Fold? => the game is over / no winners
+In the session the first player choice gets an index: 1.
+When a player raises before the index reaches NOP, this player get the index 1 and so on.
+
+-----
+
+again
+after every playersChoice we add this choice to an array of choices. When count(array) = NOP everybody made a choice.
+BUT
+What do we do when a player raises or goes all in? From that moment all active players need an new opportunity to decide what they want.
+So while adding all the money to the pot the array start at the point where the last player raised or went all-in(!). 
+The moment a player folds we remove that players ID from the NOAP. When all players in the NOAP "checked" of went all-in(!) we upgrade the tableStatus. OR when only one NOAP is left: this player wins and we start a new round
+
+-----
+
+day 267 of my solo kajak journey around the world...
+dammit. No production yesterday. or better said: I did not overcome a problem with dealing with players choices and itteration at the table.
+So now: al little more than a rubber duck. A system...
+
+the game is made for 3 but this example better understood with 4
+
+when (the first) player next to the BB makes a choice:
+BB = 20 and is highestBet on the table
+(adjust player properties (bet / active) etcetera)
+
+*** ! processChoice.php:
+    - if (count(array) !== NOAP) => add ID and choice to array.
+    - if (choice = "fold") add ID and Choice to array
+
+
+arrangePlayers:
+the array starts with higest bet. When index[-1] did not raise the first bet: next round. if it did the "raised" index becomes index[0]
+
+--------------
+
+so when is a betting round actually over:
+    when everybody folds and the BB wins.
+    when everybody has a equal bettinghight or has folded
+
+------------
+
+At this point I can point out which player wins when the game end with more than 1 player...
+But there are many ways the game can end. I need to think about there scenario's
+
+- only one player has NOT folded.
+- 
+
+-------------
+
+planning for this weekend:
+I'm unhappy with the dealer/BB/SB construction. having spend some time to think about it. All the blind and dealer positions should be based on the small blind pushing all other buttons forward.
+I should make a new function in $playerRound to manage the picking of these positions. And then add the function to select the right players in the next round.
+
+I'm also nog happy with the different waiting / playing states. In combi with fold: yes/no. I want a state system where a player is:
+    - inactive "not connected"
+    - broke "lost all money"
+    - waiting "didn't have a turn in current round"
+    - playing "in process of making a move"
+    - folded
+    - checked / called "has equal rights in this round"
+    - raise
+    - All-in-low "went all in but with less money than other players are betting"
+    - all-in-high "went all in with the highest amount of money"
+
+    these last two states are needed (and more) are needed for split pot situations.
+
+
+    -------------
+
+    When I get back at work in a moment: this is what I need to do.
+
+    I have to make a function in $playerRound to handle the kinds of "choices" from the players. If player1 calls and 2 raises... player1 needs to be back in the game where otherwise he wouldn't...
+
+    So a complicated filter of active/folded/all-in/raising/calling and checking players. And the system to have everybody player when they should.
+
+    after making every playersChoice:
+    - If the next player is still in round:0, he always plays!!! (so the BB gets a opportunity if everybody calls...)
+    - As long as there is at least 1 player with a lower BET (and who hasn't folded) the bettingRound continues.
+    -   
+
+
+
+
+
+          $loopCount = 0;
+      foreach ($this->players as $player) {
+         if ($player->playerId === $playerId) {
+
+            $player->state = $playerChoice;
+
+            $this->tablePot += $playerBet;
+            $player->bets   += $playerBet;
+            $player->wallet -= $playerBet;
+            $player->round++;
+            $this->setNextPlayer($loopCount);
+         }
+         $loopCount++;
+         
+      }
+    $tempArr = array_merge(array_slice($this->players, $loopCount, null, true), array_slice($this->players, 0, $loopCount, true));
+    $bets = array();
+    
+    foreach($tempArr as $player){
+        array_push($bets, $player->bets)
+    }
+    $minBet = $bets[0];
+
+    foreach($tempArr as $player){
+        if(player->round !== 0 && plater->state !== all-in && $player->state !== "folded" && $player->bets < $minBet){
+            setNextPlayer($loopcount);
+        }
+    }
+
+------------ its clear that I lack a good description of the workflow... It's gotten to complicated for me to oversee the whole flow... This is what I absolutely must do right now.
+
+so:
+
+
+sendChoice()
+    - AJAX process choice in $playerRound
+    - check which step is next:
+        - check if every player had the opportunity to make a choice
+        if so:
+            - check if a player is the only one left playing (and therefore wins)
+            if so:
+                - is there 1 remaining player with a wallet > 0
+                if so: 
+                    - SOCKET: ANNOUNCE WINNER & END GAME
+                else:
+                    - update players and tablePot
+                    - startNextRound
+                    (echo winner to clientJS -> ajaxReq: NextRound(deal new cards)-> socket TableUpdate)
+            else:
+                - are the active players' bets equal to eachother?
+                if so:
+                    - check if all cards are on the table
+                    if so:
+                        - evaluate Hands of the active players
+                        (socket who was the winner)
+                        (echo winner to clientJS)
+                        (=>setTimeout 4000 ->ajaxReq nextRound ->socket updateTables)
+                    else:
+                        - update TablePot
+                        - setNextPlayer
+                        - update cards
+                        (socket updateTable)
+                else:
+                    - setNextPlayer
+                    - (socket: updateTable)
+            else:
+                - setNextPlayer
+                (socket: updateTable)
+
+
+
+--------
+after making some great steps I'm left with a couple of new and important things
+- how to handle splitPot situations
+- how to end the game and empty the table
+
+
+splitPot situations:
+
+case 1:
+p1: bet-> €20
+p2: bet-> €20
+
+---------------
+case 2:
+p1: bet->100, allin
+p2: bet->120, allin
+p3: bet->160
+p4: bet->160
+
+pot 1: p1, p2, p3, p4 -> 400
+pot 2: p2, p3, p4 -> 60
+pot 3: p3, p4 -> 80
+
+if p1 & p3 win:
+- p1 & p3 share pot1
+- p3 wins pot 2 and 3
+
+if p1 & p2 win:
+- p1 & p2 share pot 1
+- p2 wins pot 2
+- pot 3 get redeposited to p3 & p4
+
+
+$maxScore = array();
+$winner   = array();
+$maxScore = max(array_column($winners, 'score'));
+
+foreach ($winners as $player) {
+    if ($player['score'] === $maxScore) {
+        array_push($winner, $player);
+    }
+}
+
+if(count($winners) > 1){
+
+    foreach($winners as $winner){
+        if ()
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
