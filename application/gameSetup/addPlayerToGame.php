@@ -1,11 +1,20 @@
 <?php
 // page extends from main.php
 
+/*
+* Sebastiaan
+* date: "2020-10-06
+* comment: this script adds the players to the dataBase, signals client if table is full, and signals the player on the last chair the game can start
+*/
+
 // check database for number of players on act_table
 // if not full -> add player -> response "wait" or "startGame"
 // if full -> to bad...
 
 use application\common\Player;
+use application\common\Game;
+use application\common\PlayerRound;
+use application\common\Round;
 
 // TODO Build system to check for players that are logging in at the same time;
 
@@ -28,7 +37,7 @@ if ($result[0] > 3) {
 $tempId = mt_rand();
 $output;
 
-if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0] === '3') {
+if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0] === "3") {
    // ! chair should be reserved first... But we need a player_id for the player to take a chair
 
    // add player to DB
@@ -54,7 +63,8 @@ if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0]
    $stmt03->execute();
    $output =  array(
       'playerId'  => $newPlayerId,
-      'startGame' => false);
+      'startGame' => false
+   );
 
 
    // when last player entered table:
@@ -76,7 +86,6 @@ if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0]
          'startGame' => true
       );
 
-      $player = new Player($result[0], $newPlayerId);
 
 
       // make table record as an backup
@@ -103,8 +112,7 @@ if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0]
 
 
 
-
-   //  client details are send to node.js and shared with all clients for "player had joined the table"-function in chat window
+   //  client details are send to public/scripts/node.js and shared with all clients for "player had joined the table"-function in chat window
    $ch = curl_init('http://localhost:8080');
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    $jsonData = json_encode([
@@ -118,6 +126,8 @@ if ($result[0] === "0" || $result[0] === "1" || $result[0] === "2" || $result[0]
    curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
    $response = curl_exec($ch);
+
+
    curl_close($ch);
 }
 
