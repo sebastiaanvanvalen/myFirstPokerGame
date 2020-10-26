@@ -26,8 +26,7 @@ $(document).ready(function(){
             console.log("the table is currently full. Please try again later")
          } else {
             // main.php needs to encrypt clientId and then check it at the table. + more
-            window.location.href = "../act_table_1.php?id=" + data.playerId + "&name=" +playerName + " (" + playerAge +")&startGame=" + data.startGame;
-            // window.location.href = "../act_table_1.php?id=" + data + "&name=" +playerName + " (" + playerAge +")&startGame=";
+            window.location.href = "../act_table_1.php?id=" + data.playerId + "&name=" +playerName + "&age=" + playerAge + "&startGame=" + data.startGame;
 
          }
      }).fail(function (data) {
