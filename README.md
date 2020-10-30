@@ -1,5 +1,8 @@
 # myFirstPokerGame
 
+###
+For now: this is NOT yet a finished project! 
+
 ## terminology and abbreviations
 1. NOP = Number Of Player (ex client)
 
